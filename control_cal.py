@@ -1,14 +1,13 @@
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 # from shapely.geometry import Point, Polygon
 from scipy.spatial import Delaunay
-##import cvxpy as cp
-import gurobipy as gp
 
+import gurobipy as gp
 from gurobipy import GRB
-##import mosek
 import sys
 from scipy.spatial import Delaunay
 import  scipy
@@ -391,16 +390,36 @@ class cell ():
 
 
 
+# v0 = [-3.083,0.697]
+# v1 = [-3.684,-1.109]
+# v2 = [-3.191,-3.442]
+# v3 = [-0.061,-3.954]
+# v4 = [2.424,-3.508]
+# v5 = [2.836,-1.407]
+# v6 = [2.202,0.630]
+# v7 = [-0.766,0.776]
+# l8 = [-1.765,	-3.972]
+# l9 = [0.774,	-3.919]
+
 def control_cal(v_ls):
-    v_ls = np.array(v_ls)
-
     center = np.mean(v_ls, axis=0)
+    sc = 1
+    # o0 = center+ 1.1*sc*(v_ls[1]-center)/np.linalg.norm((v_ls[1]-center))
+    # o1 = center+ 0.9*sc*(v_ls[3]-center)/np.linalg.norm((v_ls[3]-center))
+    # o2 = center+ 1.1*sc*(v_ls[5]-center)/np.linalg.norm((v_ls[5]-center))
+    # o3 = center+ 0.8*sc*(v_ls[7]-center)/np.linalg.norm((v_ls[7]-center))
+    # o_ls = np.array([o0, o1, o2, o3])
+
+    # c0 = cell(Barrier=[[v_ls[7],v_ls[0]], [v_ls[1], v_ls[0]], [v_ls[7], center]],exit_Vertices = [v_ls[1], center], vrt = [v_ls[7], v_ls[0], v_ls[1], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5],v_ls[6], v_ls[7]])
+    # c1 = cell(Barrier=[[v_ls[1],v_ls[2]], [v_ls[2], v_ls[3]], [v_ls[1], center]],exit_Vertices = [v_ls[3], center], vrt = [v_ls[1], v_ls[2], v_ls[3], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5],v_ls[6], v_ls[7]])
+    # c2 = cell(Barrier=[[v_ls[3],v_ls[4]], [v_ls[4], v_ls[5]], [v_ls[3], center]],exit_Vertices = [v_ls[5], center], vrt = [v_ls[3], v_ls[4], v_ls[5], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5],v_ls[6], v_ls[7]])
+    # c3 = cell(Barrier=[[v_ls[5],v_ls[6]], [v_ls[6], v_ls[7]], [v_ls[5], center]],exit_Vertices = [v_ls[7], center], vrt = [v_ls[5], v_ls[6], v_ls[7], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5],v_ls[6], v_ls[7]])
 
 
 
-    c0 = cell(Barrier=[[v_ls[0],v_ls[1]], [v_ls[1], v_ls[2]], [v_ls[0], center]],exit_Vertices = [v_ls[2], center], vrt = [v_ls[0], v_ls[1], v_ls[2], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5]])
-    c1 = cell(Barrier=[[v_ls[2],v_ls[3]], [v_ls[3], v_ls[4]], [v_ls[2], center]],exit_Vertices = [v_ls[4], center], vrt = [v_ls[2], v_ls[3], v_ls[4], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5]])
-    c2 = cell(Barrier=[[v_ls[4],v_ls[5]], [v_ls[5], v_ls[0]], [v_ls[4], center]],exit_Vertices = [v_ls[0], center], vrt = [v_ls[4], v_ls[5], v_ls[0], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5]])
+    c0 = cell(Barrier=[[v_ls[2],v_ls[1]], [v_ls[1], v_ls[0]], [v_ls[0], center]] ,exit_Vertices = [center, v_ls[2]], vrt = [v_ls[0], v_ls[1], v_ls[2], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5]])
+    c1 = cell(Barrier=[[v_ls[2],v_ls[3]], [v_ls[3], v_ls[4]], [v_ls[2], center]] ,exit_Vertices = [center, v_ls[4]], vrt = [v_ls[2], v_ls[3], v_ls[4], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5]])
+    c2 = cell(Barrier=[[v_ls[4],v_ls[5]], [v_ls[5], v_ls[0]], [v_ls[4], center]] ,exit_Vertices = [center, v_ls[0]], vrt = [v_ls[4], v_ls[5], v_ls[0], center], landmark_ls=[v_ls[0], v_ls[1],v_ls[2], v_ls[3],v_ls[4],v_ls[5]])
 
 
 
@@ -410,7 +429,19 @@ def control_cal(v_ls):
     B = np.eye((2))
     dt = 0.01
 
-    i_cell = 0
+    fig, ax  =plt.subplots()
+            
+    # for i in range(len(v_ls)-1):
+    #     ax.plot([v_ls[i,0], v_ls[i+1,0]], [v_ls[i,1], v_ls[i+1,1]], color = 'black')
+            
+    # ax.plot([v_ls[0,0], v_ls[-1,0]], [v_ls[0,1], v_ls[-1,1]], color = 'black')
+        
+    # ax.plot([center[0], v_ls[0,0]], [center[1],v_ls[0,1]], color = 'blue')
+    # ax.plot([center[0], v_ls[2,0]], [center[1],v_ls[2,1]], color = 'blue')
+    # ax.plot([center[0], v_ls[4,0]], [center[1],v_ls[4,1]], color = 'blue')
+
+
+  
     for i_cell in range(len(cell_ls)):
 
         s0=Control_cal(cell_ls[i_cell],A, B,dt,ch= 1, cv = 1)
@@ -419,7 +450,16 @@ def control_cal(v_ls):
         plt.axis('equal')
         # plt.show()
         s0.vector_F()
+        plt.show()
         np.save('control_gains/K'+str(i_cell)+'.npy',s0.K)
 
-
-control_cal([(-1.3585218217877602, -1.0519687234778339), (0.0047952506447336285, -1.3853034722327335), (1.0970236430448255, -0.6795500756629498), (1.1838656375713086, 0.5225033029603899), (0.15454851413905468, 1.096347981031064), (-1.2531183762181763, 0.31566174879822784)])
+v_ls = np.array([
+    (1.1496969370336396, -0.5259296122393697),
+    (1.0041159592729698, 0.6705011313490986),
+    (-0.11308191997482725, 1.0639843991768112),
+    (-1.2856221230071447, 0.08040521652859423),
+    (-1.1847093514331641, -1.322996577039035),
+    (0.2142195551636304, -1.4237553470218551)
+]
+)
+control_cal(v_ls)
