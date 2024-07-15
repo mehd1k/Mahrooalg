@@ -131,25 +131,7 @@ class Control_cal():
         
     def plot_cell(self):
         fig, ax = plt.subplots() 
-        v0 = [-1813,-1584]
-        v1 = [-2100, -3169	]
-        v2 = [-1794,	-4624]
-        v3 = [640,	-4865]
-        v4 = [2823,	-4882]
-        v5 = [3256,	-3436]
-        v6 = [2824,	-1944]
-        v7 = [484,	-1673]
-        v_ls = np.array([v0, v1, v2, v3, v4, v5, v6, v7])*10**-3
-                
-        for i in range(len(v_ls)-1):
-            ax.plot([v_ls[i,0], v_ls[i+1,0]], [v_ls[i,1], v_ls[i+1,1]], color = 'black')
-                
-        ax.plot([v_ls[0,0], v_ls[-1,0]], [v_ls[0,1], v_ls[-1,1]], color = 'black')
-            
-        ax.plot([center[0], v_ls[5,0]], [center[1],v_ls[5,1]], color = 'blue')
-        ax.plot([center[0], v_ls[7,0]], [center[1],v_ls[7,1]], color = 'blue')
-        ax.plot([center[0], v_ls[1,0]], [center[1],v_ls[1,1]], color = 'blue')
-        ax.plot([center[0], v_ls[3,0]], [center[1],v_ls[3,1]], color = 'blue')
+       
                 # ax.scatter(center[0], center[1])
         # fig, ax = plt.subplots()
         for i in range(len(self.vrt)-1):
@@ -305,7 +287,7 @@ class Control_cal():
         return (hull.find_simplex(p)>=0)[0]
 
 
-    def get_K(self, cbf_lb=-0.1, clf_lb = -0.01):
+    def get_K(self, cbf_lb=0, clf_lb = 0):
         ###calcualting gains with LP
       
       
@@ -403,7 +385,7 @@ class cell ():
 
 def control_cal(v_ls):
     center = np.mean(v_ls, axis=0)
-    sc = 1
+    
     # o0 = center+ 1.1*sc*(v_ls[1]-center)/np.linalg.norm((v_ls[1]-center))
     # o1 = center+ 0.9*sc*(v_ls[3]-center)/np.linalg.norm((v_ls[3]-center))
     # o2 = center+ 1.1*sc*(v_ls[5]-center)/np.linalg.norm((v_ls[5]-center))
